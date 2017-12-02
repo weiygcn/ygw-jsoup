@@ -1,13 +1,6 @@
-package http;
+package InterfaceTest;
 
-import java.util.Date;
-import java.text.SimpleDateFormat;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.fcibook.quick.http.QuickHttp;
-import com.microsoft.schemas.office.visio.x2012.main.CellType;
-import org.apache.http.entity.ContentType;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -18,25 +11,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
- * XSSFSheet 代表 Excel 文件中的一张表格,
- * 我们通过 getSheetAt(0) 指定表格索引来获取对应表格,
- * 注意表格索引从 0 开始！
- * 开始循环表格数据,表格的行索引从 0 开始
- * sheet.getLastRowNum() : 获取当前表格中最后一行数据对应的行索引
- * XSSFRow 代表一行数据
+ * Created by weiyg on 01/12/2017.
  */
-public class Test {
-    static Long startTime = System.currentTimeMillis();
-
-    public static void main(String args[]) {
-        Request req = new Request();
+public class ExcelFromData implements Excel {
+    @Override
+    public void operator(ExcelOperatorCallback excelOperatorCallback, String ExcelPath) {
         try {
-            String excelPath = "D:\\\\Study\\\\InterFaceTestCase.xlsx";            // 创建 Excel 文件的输入流对象
+            String excelPath = ExcelPath;            // 创建 Excel 文件的输入流对象
             FileInputStream excelFileInputStream = new FileInputStream(excelPath);
             XSSFWorkbook workbook = new XSSFWorkbook(excelFileInputStream);            // XSSFWorkbook 就代表一个 Excel 文件,创建其对象，就打开这个 Excel 文件
             excelFileInputStream.close();            //输入流使用后，及时关闭！这是文件流操作中极好的一个习惯！
@@ -44,12 +30,15 @@ public class Test {
             XSSFSheet sheetData = workbook.getSheetAt(0);
             XSSFSheet sheetReport = workbook.getSheetAt(2);
 
-
-            System.out.println("存在"+sheetData.getLastRowNum()+"行数据"+"\n"+"存在"+sheetData.getPhysicalNumberOfRows()+"列数据");
+            //获取excel中存在多少行多少列数据，对应生成同样数据结构的String二维数组用于存储数据
+            int r = sheetData.getLastRowNum() + 1;
+            int c = sheetData.getPhysicalNumberOfRows() + 1;
+            String[][] ExcelDataArray = new String[r][c];
+            //从元素下标为1处开始
             for (int rowIndex = 1; rowIndex <= sheetData.getLastRowNum(); rowIndex++) {
                 XSSFRow row = sheetData.getRow(rowIndex);
                 if (row == null && rowIndex <= sheetData.getLastRowNum()) {
-                    System.out.println("[current row is null,rowIndex is" + rowIndex + " ]");
+                    System.out.println("[当前Excel行无数据" + rowIndex + " ]");
                     continue;
                 }
 
@@ -112,8 +101,8 @@ public class Test {
         } catch (
                 IOException e) {
             e.printStackTrace();
+        } finally {
+//            return String[][];
         }
     }
-
-
 }
